@@ -8886,6 +8886,8 @@
         if (element.a) {
           return element.a[attrName];
         }
+      } else if (element.tagName() === 'a') {
+        return element.attr(attrName);
       } else {
         _ref = selection.get(), from = _ref[0], to = _ref[1];
         selectedContent = element.content.slice(from, to);
@@ -8911,6 +8913,8 @@
       var character;
       if (element.type() === 'Image') {
         return true;
+      } else if (element.tagName() === 'a') {
+        return true;
       } else {
         if (!element.content) {
           return false;
@@ -8931,6 +8935,8 @@
     Link.isApplied = function(element, selection) {
       if (element.type() === 'Image') {
         return element.a;
+      } else if (element.tagName === 'a') {
+        return true;
       } else {
         return Link.__super__.constructor.isApplied.call(this, element, selection);
       }
@@ -8939,7 +8945,7 @@
     Link.apply = function(element, selection, callback) {
       var allowScrolling, app, applied, characters, dialog, domElement, ends, from, measureSpan, modal, rect, scrollX, scrollY, selectTag, starts, to, transparent, _ref, _ref1;
       applied = false;
-      if (element.type() === 'Image') {
+      if (element.type() === 'Image' || element.tagName() === 'a') {
         rect = element.domElement().getBoundingClientRect();
       } else {
         if (selection.isCollapsed()) {
