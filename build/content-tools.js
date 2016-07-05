@@ -3746,7 +3746,7 @@
 
   })(ContentEdit.Element);
 
-  ContentEdit.TagNames.get().register(ContentEdit.Text, 'address', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p');
+  ContentEdit.TagNames.get().register(ContentEdit.Text, 'address', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a');
 
   ContentEdit.PreText = (function(_super) {
     __extends(PreText, _super);
@@ -6512,6 +6512,16 @@
       AnchoredDialogUI.__super__.constructor.call(this);
       this._position = [0, 0];
     }
+
+    AnchoredDialogUI.prototype.show = function() {
+      var rect, result;
+      result = AnchoredDialogUI.__super__.show.call(this);
+      rect = this._domElement.getBoundingClientRect();
+      if (rect && rect.top < 0) {
+        this.position([this._position[0], this._position[1] - rect.top]);
+      }
+      return result;
+    };
 
     AnchoredDialogUI.prototype.mount = function() {
       this._domElement = this.constructor.createDiv(['ct-widget', 'ct-anchored-dialog']);

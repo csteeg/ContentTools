@@ -12,6 +12,15 @@ class ContentTools.AnchoredDialogUI extends ContentTools.WidgetUI
 
     # Methods
 
+    show: () -> 
+        result = super()
+
+        rect = @_domElement.getBoundingClientRect();
+        if (rect and rect.top < 0)
+            @position([@_position[0], @_position[1] - rect.top])
+    
+        return result
+    
     mount: () ->
         # Mount the widget to the DOM
         #
