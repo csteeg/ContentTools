@@ -8945,7 +8945,7 @@
     Link.isApplied = function(element, selection) {
       if (element.type() === 'Image') {
         return element.a;
-      } else if (element.tagName === 'a') {
+      } else if (element.tagName() === 'a') {
         return true;
       } else {
         return Link.__super__.constructor.isApplied.call(this, element, selection);

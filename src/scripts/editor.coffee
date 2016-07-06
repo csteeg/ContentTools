@@ -522,7 +522,7 @@ class _EditorApp extends ContentTools.ComponentUI
             html = region.html()
             if region.children.length == 1
                 child = region.children[0]
-                if child.content and not child.content.html()
+                if child.content and not child.content.html() and not child.tagName() is 'a'
                     html = ''
 
             # Apply the changes made to the DOM (affectively resetting the DOM

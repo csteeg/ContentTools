@@ -210,7 +210,7 @@ class ContentTools.Tools.Link extends ContentTools.Tools.Bold
         # element/selection.
         if element.type() is 'Image'
             return element.a
-        else if element.tagName is 'a'
+        else if element.tagName() is 'a'
             return true
         else
             return super(element, selection)
