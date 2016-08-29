@@ -3616,7 +3616,7 @@
         return selection.select(previous.domElement());
       } else {
         return ContentEdit.Root.get().trigger('previous-region', this.closest(function(node) {
-          return node.type() === 'Region';
+          return node.type() === 'Fixture' || node.type() === 'Region';
         }));
       }
     };
@@ -3624,7 +3624,7 @@
     Text.prototype._keyReturn = function(ev) {
       var element, insertAt, lineBreakStr, selection, tail, tip;
       ev.preventDefault();
-      if (this.content.isWhitespace()) {
+      if (this.content.isWhitespace() && !ev.shiftKey ^ ContentEdit.PREFER_LINE_BREAKS) {
         return;
       }
       selection = ContentSelect.Range.query(this._domElement);
@@ -3634,7 +3634,7 @@
         insertAt = selection.get()[0];
         lineBreakStr = '<br>';
         if (this.content.length() === insertAt) {
-          if (!this.content.characters[insertAt - 1].isTag('br')) {
+          if (this.content.length() === 0 || !this.content.characters[insertAt - 1].isTag('br')) {
             lineBreakStr = '<br><br>';
           }
         }
@@ -3684,7 +3684,18 @@
     };
 
     Text.prototype._keyTab = function(ev) {
-      return ev.preventDefault();
+      ev.preventDefault();
+      if (this.isFixed()) {
+        if (ev.shiftKey) {
+          return ContentEdit.Root.get().trigger('previous-region', this.closest(function(node) {
+            return node.type() === 'Fixture' || node.type() === 'Region';
+          }));
+        } else {
+          return ContentEdit.Root.get().trigger('next-region', this.closest(function(node) {
+            return node.type() === 'Fixture' || node.type() === 'Region';
+          }));
+        }
+      }
     };
 
     Text.prototype._keyUp = function(ev) {
@@ -5256,7 +5267,6 @@
   })(ContentEdit.Text);
 
 }).call(this);
-
 (function() {
   var AttributeUI, ContentTools, CropMarksUI, StyleUI, exports, _EditorApp,
     __hasProp = {}.hasOwnProperty,
@@ -6540,6 +6550,7 @@
     AnchoredDialogUI.prototype.mount = function() {
       this._domElement = this.constructor.createDiv(['ct-widget', 'ct-anchored-dialog']);
       this.parent().domElement().appendChild(this._domElement);
+      this._contain();
       this._domElement.style.top = "" + this._position[1] + "px";
       return this._domElement.style.left = "" + this._position[0] + "px";
     };
@@ -6550,8 +6561,24 @@
       }
       this._position = newPosition.slice();
       if (this.isMounted()) {
+        this._contain();
         this._domElement.style.top = "" + this._position[1] + "px";
         return this._domElement.style.left = "" + this._position[0] + "px";
+      }
+    };
+
+    AnchoredDialogUI.prototype._contain = function() {
+      var halfWidth, pageWidth;
+      if (!this.isMounted()) {
+        return;
+      }
+      halfWidth = this._domElement.getBoundingClientRect().width / 2 + 5;
+      pageWidth = document.documentElement.clientWidth || document.body.clientWidth;
+      if ((this._position[0] + halfWidth) > (pageWidth - halfWidth)) {
+        this._position[0] = pageWidth - halfWidth;
+      }
+      if (this._position[0] < halfWidth) {
+        return this._position[0] = halfWidth;
       }
     };
 
@@ -8279,7 +8306,7 @@
         html = region.html();
         if (region.children.length === 1) {
           child = region.children[0];
-          if (child.content && !child.content.html()) {
+          if (child.content && !child.content.html() && !child.tagName() === 'a') {
             html = '';
           }
         }
@@ -8361,13 +8388,17 @@
       if (regionQuery !== void 0) {
         this._regionQuery = regionQuery;
       }
-      if (this._regionQuery.length > 0 && this._regionQuery[0].nodeType === Node.ELEMENT_NODE) {
-        this._domRegions = this._regionQuery;
-      } else {
-        this._domRegions = document.querySelectorAll(this._regionQuery);
+      this._domRegions = [];
+      if (this._regionQuery) {
+        if (typeof this._regionQuery === 'string' || this._regionQuery instanceof String) {
+          this._domRegions = document.querySelectorAll(this._regionQuery);
+        } else {
+          this._domRegions = this._regionQuery;
+        }
       }
       if (this._state === 'editing') {
         this._initRegions();
+        this._preventEmptyRegions();
       }
       if (this._ignition) {
         if (this._domRegions.length) {
