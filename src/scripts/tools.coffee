@@ -349,9 +349,13 @@ class ContentTools.Tools.Link extends ContentTools.Tools.Bold
 
                 # If specified add the new link
                 if detail.href
-                    a = new HTMLString.Tag('a', detail)
-                    element.content = element.content.format(from, to, a)
-                    element.content.optimize()
+                    if element.tagName() is 'a'
+                        element.attr('href', detail.href)
+                        element.attr('target', detail.target || '')
+                    else
+                        a = new HTMLString.Tag('a', detail)
+                        element.content = element.content.format(from, to, a)
+                        element.content.optimize()
 
                 element.updateInnerHTML()
 

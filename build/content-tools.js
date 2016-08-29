@@ -9085,9 +9085,14 @@
         } else {
           element.content = element.content.unformat(from, to, 'a');
           if (detail.href) {
-            a = new HTMLString.Tag('a', detail);
-            element.content = element.content.format(from, to, a);
-            element.content.optimize();
+            if (element.tagName() === 'a') {
+              element.attr('href', detail.href);
+              element.attr('target', detail.target || '');
+            } else {
+              a = new HTMLString.Tag('a', detail);
+              element.content = element.content.format(from, to, a);
+              element.content.optimize();
+            }
           }
           element.updateInnerHTML();
         }
