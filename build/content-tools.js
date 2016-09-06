@@ -3964,7 +3964,7 @@
       }
       this._domElement.setAttribute('class', classes);
       style = this._attributes['style'] ? this._attributes['style'] : '';
-      style += "background-image:url(" + this._attributes['src'] + ");";
+      style += "background-image:url('" + this._attributes['src'] + "');";
       if (this._attributes['width']) {
         style += "width:" + this._attributes['width'] + "px;";
       }
@@ -4024,18 +4024,18 @@
       }
       attributes = this.getDOMElementAttributes(domElement);
       if (attributes['width'] === void 0) {
-        if (attributes['height'] === void 0) {
-          attributes['width'] = domElement.naturalWidth;
-        } else {
+        //if (attributes['height'] === void 0) {
+        //  attributes['width'] = domElement.naturalWidth;
+        //} else {
           attributes['width'] = domElement.clientWidth;
-        }
+        //}
       }
       if (attributes['height'] === void 0) {
-        if (attributes['width'] === void 0) {
-          attributes['height'] = domElement.naturalHeight;
-        } else {
+        //if (attributes['width'] === void 0) {
+        //  attributes['height'] = domElement.naturalHeight;
+        //} else {
           attributes['height'] = domElement.clientHeight;
-        }
+        //}
       }
       return new this(attributes, a);
     };
@@ -9729,7 +9729,7 @@
       })(this));
       dialog.addEventListener('save', (function(_this) {
         return function(ev) {
-          var detail, image, imageAttrs, imageSize, imageURL, index, node, _ref;
+          var cursor, detail, image, imageAttrs, imageSize, imageURL, img, tail, tip;
           detail = ev.detail();
           imageURL = detail.imageURL;
           imageSize = detail.imageSize;
@@ -9741,8 +9741,15 @@
           imageAttrs.src = imageURL;
           imageAttrs.width = imageSize[0];
           image = new ContentEdit.Image(imageAttrs);
-          _ref = _this._insertAt(element), node = _ref[0], index = _ref[1];
-          node.parent().attach(image, index);
+          cursor = selection.get()[0] + 1;
+          tip = element.content.substring(0, selection.get()[0]);
+          tail = element.content.substring(selection.get()[1]);
+          img = new HTMLString.String(image.html(), element.content.preserveWhitespace());
+          element.content = tip.concat(img, tail);
+          element.updateInnerHTML();
+          element.taint();
+          selection.set(cursor, cursor);
+          element.selection(selection);
           image.focus();
           modal.hide();
           dialog.hide();
