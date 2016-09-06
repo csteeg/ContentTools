@@ -3964,7 +3964,7 @@
       }
       this._domElement.setAttribute('class', classes);
       style = this._attributes['style'] ? this._attributes['style'] : '';
-      style += "background-image:url(" + this._attributes['src'] + ");";
+      style += "background-image:url('" + this._attributes['src'] + "');";
       if (this._attributes['width']) {
         style += "width:" + this._attributes['width'] + "px;";
       }
@@ -4024,18 +4024,18 @@
       }
       attributes = this.getDOMElementAttributes(domElement);
       if (attributes['width'] === void 0) {
-        if (attributes['height'] === void 0) {
-          attributes['width'] = domElement.naturalWidth;
-        } else {
+        //if (attributes['height'] === void 0) {
+        //  attributes['width'] = domElement.naturalWidth;
+        //} else {
           attributes['width'] = domElement.clientWidth;
-        }
+        //}
       }
       if (attributes['height'] === void 0) {
-        if (attributes['width'] === void 0) {
-          attributes['height'] = domElement.naturalHeight;
-        } else {
+        //if (attributes['width'] === void 0) {
+        //  attributes['height'] = domElement.naturalHeight;
+        //} else {
           attributes['height'] = domElement.clientHeight;
-        }
+        //}
       }
       return new this(attributes, a);
     };

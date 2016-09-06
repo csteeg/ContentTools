@@ -1007,9 +1007,22 @@ class ContentTools.Tools.Image extends ContentTools.Tool
             image = new ContentEdit.Image(imageAttrs)
 
             # Find insert position
-            [node, index] = @_insertAt(element)
-            node.parent().attach(image, index)
+#            [node, index] = @_insertAt(element)
+#            node.parent().attach(image, index)
+            cursor = selection.get()[0] + 1
 
+            tip = element.content.substring(0, selection.get()[0])
+            tail = element.content.substring(selection.get()[1])
+            
+            img = new HTMLString.String(image.html(), element.content.preserveWhitespace())
+            element.content = tip.concat(img, tail)
+            element.updateInnerHTML()
+            element.taint()
+
+            # Restore the selection
+            selection.set(cursor, cursor)
+            element.selection(selection)
+        
             # Focus the new image
             image.focus()
 
