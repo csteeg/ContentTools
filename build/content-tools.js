@@ -6786,7 +6786,7 @@
         this._domImage = this.constructor.createDiv(['ct-image-dialog__image']);
         this._domView.appendChild(this._domImage);
       }
-      this._domImage.style['background-image'] = "url(" + imageURL + ")";
+      this._domImage.style['background-image'] = "url('" + imageURL + "')";
       return this.state('populated');
     };
 
