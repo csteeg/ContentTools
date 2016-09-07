@@ -9729,7 +9729,7 @@
       })(this));
       dialog.addEventListener('save', (function(_this) {
         return function(ev) {
-          var cursor, detail, image, imageAttrs, imageSize, imageURL, img, tail, tip;
+          var cursor, detail, image, imageAttrs, imageSize, imageURL, img, index, node, tail, tip, _ref;
           detail = ev.detail();
           imageURL = detail.imageURL;
           imageSize = detail.imageSize;
@@ -9741,16 +9741,21 @@
           imageAttrs.src = imageURL;
           imageAttrs.width = imageSize[0];
           image = new ContentEdit.Image(imageAttrs);
-          cursor = selection.get()[0] + 1;
-          tip = element.content.substring(0, selection.get()[0]);
-          tail = element.content.substring(selection.get()[1]);
-          img = new HTMLString.String(image.html(), element.content.preserveWhitespace());
-          element.content = tip.concat(img, tail);
-          element.updateInnerHTML();
-          element.taint();
-          selection.set(cursor, cursor);
-          element.selection(selection);
-          image.focus();
+          if (element.type() === "Image") {
+            _ref = _this._insertAt(element), node = _ref[0], index = _ref[1];
+            node.parent().attach(image, index);
+            image.focus();
+          } else {
+            cursor = selection.get()[0] + 1;
+            tip = element.content.substring(0, selection.get()[0]);
+            tail = element.content.substring(selection.get()[1]);
+            img = new HTMLString.String(image.html(), element.content.preserveWhitespace());
+            element.content = tip.concat(img, tail);
+            element.updateInnerHTML();
+            element.taint();
+            selection.set(cursor, cursor);
+            element.selection(selection);
+          }
           modal.hide();
           dialog.hide();
           return callback(true);
